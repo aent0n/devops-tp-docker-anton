@@ -1,5 +1,5 @@
 # ==================================
-# Stage 1: Build CSS with Tailwind
+# Stage 1: Build CSS with tailwind
 # ==================================
 FROM node:lts-alpine as builder
 
