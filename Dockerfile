@@ -22,7 +22,7 @@ RUN npm run build:css
 # Stage 2: Production Image (Hardened)
 # ==================================
 # Utiliser une version spécifique (pas latest)
-FROM nginx:1.25.3-alpine
+FROM nginx:1.25.4-alpine
 
 # Métadonnées
 LABEL maintainer="TP DevOps"
