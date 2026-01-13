@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP DevOps Docker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TP DevOps avec Docker</h1>
+            <p class="subtitle">Pipeline CI/CD et Conteneurisation</p>
+            <div class="version">Version: <span id="version">1.0.0</span></div>
+        </header>
+        <main>
+            <section class="info-box">
+                <h2>Informations du Container</h2>
+                <p><strong>Status :</strong> <span id="status">En cours d'exécution</span></p>
+                <p><strong>Image :</strong> <span id="image">ghcr.io/anton/devops-tp-docker-anton:latest</span></p>
+                <p><strong>Dernière MAJ :</strong> <span id="timestamp"></span></p>
+            </section>
+            <section class="action-box">
+                <h2>Test de Fonctionnalité</h2>
+                <button onclick="testContainer()" class="btn-primary">Tester le Container</button>
+                <div id="result" class="result-box"></div>
+            </section>
+            <section class="docker-info">
+                <h2>Informations Docker</h2>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <strong>Base Image</strong>
+                        <p>nginx:alpine</p>
+                    </div>
+                    <div class="tech-item">
+                        <strong>Registry</strong>
+                        <p>GitHub Container Registry</p>
+                    </div>
+                    <div class="tech-item">
+                        <strong>CI/CD</strong>
+                        <p>GitHub Actions</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>Container ID: <span id="container-id">N/A</span></p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
