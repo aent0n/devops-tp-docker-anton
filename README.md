@@ -22,7 +22,7 @@ devops-tp-docker-anton/
 
 ## Utilisation
 
-1. Cloner le repo : `git clone https://github.com/anton/devops-tp-docker-anton`
+1. Cloner le repo : `git clone https://github.com/aent0n/devops-tp-docker-anton`
 2. Construire l'image : `docker build -t devops-tp-docker-anton .`
 3. Lancer le container : `docker run -d -p 8080:80 devops-tp-docker-anton`
 4. Accéder à http://localhost:8080
