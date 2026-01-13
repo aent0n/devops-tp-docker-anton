@@ -1,6 +1,8 @@
 # TP DevOps Docker - Anton
 
 Ce repository contient le TP de déploiement automatisé avec Docker et GitHub Actions, incluant une pipeline avec TailwindCSS et un multi-stage build.
+<img width="1900" height="1630" alt="image" src="https://github.com/user-attachments/assets/3ce81b17-5b5c-44cb-bf98-cef7387ea361" />
+
 
 ## Structure
 
