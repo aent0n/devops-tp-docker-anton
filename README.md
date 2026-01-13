@@ -1,6 +1,6 @@
 # TP DevOps Docker - Anton
 
-Ce repository contient le TP de déploiement automatisé avec Docker et GitHub Actions, incluant une pipeline moderne avec **Tailwind CSS** et un **Multi-Stage Build**.
+Ce repository contient le TP de déploiement automatisé avec Docker et GitHub Actions, incluant une pipeline avec TailwindCSS et un multi-stage build.
 
 ## Structure
 
@@ -10,15 +10,15 @@ devops-tp-docker-anton/
 │   └── workflows/
 │       └── docker-deploy.yml  # Workflow CI/CD
 ├── src/
-│   ├── index.html            # HTML avec classes Tailwind
+│   ├── index.html            # HTML (avec classes Tailwind)
 │   ├── input.css             # CSS source (directives Tailwind)
-│   ├── output.css            # (Généré) CSS compilé
+│   ├── output.css            # CSS compilé du build
 │   └── app.js                # JavaScript
 ├── nginx/
 │   └── nginx.conf            # Configuration Nginx
-├── Dockerfile                # Multi-stage: Node build -> Nginx run
+├── Dockerfile                # multistage Node build into Nginx run
 ├── package.json              # Dépendances Node.js (Tailwind)
-├── tailwind.config.js        # Config Tailwind (Theme Retro)
+├── tailwind.config.js        # Config Tailwind (pour le thème custom rétro)
 ├── .dockerignore             # Fichiers à exclure
 └── README.md                 # Documentation
 ```
@@ -28,7 +28,7 @@ devops-tp-docker-anton/
 ### En Local (avec Docker)
 
 1. Cloner le repo : `git clone https://github.com/anton/devops-tp-docker-anton`
-2. Construire l'image (cela va compiler le CSS automatiquement) : 
+2. Construire l'image (compiler le CSS automatiquement) : 
    ```bash
    docker build -t devops-tp-docker-anton .
    ```
@@ -38,9 +38,7 @@ devops-tp-docker-anton/
    ```
 4. Accéder à http://localhost:8080
 
-### Développement (sans Docker)
-
-Si vous voulez modifier le CSS sans reconstruire l'image à chaque fois :
+### Développement de la webapp sans docker
 
 1. Installer les dépendances : `npm install`
 2. Lancer le mode watch de Tailwind :
