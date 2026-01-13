@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Retro Effects that require complex CSS or pseudo-elements */
+/* theme retro qui ajoute des effets "scanlines" et des balises de module*/
 @layer utilities {
     .scanlines::after {
         content: "";
