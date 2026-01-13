@@ -1,7 +1,7 @@
 # ==================================
 # Stage 1: Build CSS with tailwind
 # ==================================
-FROM node:lts-alpine as builder
+FROM node:lts-alpine AS builder
 
 WORKDIR /app
 
