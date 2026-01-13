@@ -58,6 +58,7 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}:scan
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
