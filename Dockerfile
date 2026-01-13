@@ -25,7 +25,7 @@ FROM nginx:alpine
 
 # Métadonnées
 LABEL maintainer="TP DevOps"
-LABEL description="Application DevOps Retro-Style (Built with Tailwind)"
+LABEL description="Une Application DevOps dans un style rétro (ajout de Tailwind)"
 
 # Copier la configuration Nginx
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
