@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Retro Effects that require complex CSS or pseudo-elements */
+@layer utilities {
+    .scanlines::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: repeating-linear-gradient(0deg,
+                rgba(0, 0, 0, 0.5),
+                rgba(0, 0, 0, 0.5) 1px,
+                transparent 1px,
+                transparent 2px);
+        pointer-events: none;
+        z-index: 10;
+        opacity: 0.3;
+    }
+
+    .module-tag::before {
+        content: ">> MODULE_LOADED";
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background: #0a0a15;
+        padding: 0 5px;
+        font-size: 0.8em;
+        color: #00ffff;
+    }
+}
+
+#status {
+    text-shadow: 0 0 5px #33ff00;
+}
