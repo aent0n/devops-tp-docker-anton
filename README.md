@@ -28,9 +28,32 @@ Nous avons transformé le pipeline DevOps classique en une **"Security Fortress"
     - **Hadolint** : Linting du Dockerfile pour forcer les bonnes pratiques.
     - **Trivy** : Scanner de vulnérabilités intégré dans le pipeline de build.
         - *Break the build* : Le pipeline échoue automatiquement si une faille CRITICAL est trouvée.
+    - **SBOM** : Génération d'un inventaire logiciel (Software Bill of Materials) avec **Syft/Anchore**.
 4.  **Hardening** :
     - **Non-Root** : L'image tourne avec un utilisateur `appuser` (UID 1000).
     - **Nginx Headers** : Protection XSS, Anti-Clickjacking et CSP stricts.
+
+---
+
+## 🤯 Difficultés Rencontrées (Post-Mortem)
+
+Ce TP ne s'est pas fait sans douleur. Voici les principaux obstacles techniques surmontés :
+
+1.  **L'enfer des versions CodeQL** :
+    *   *Problème* : GitHub a déprécié CodeQL v3 super vite.
+    *   *Solution* : Obligé de migrer vers v4 en plein milieu du TP pour éviter les warnings.
+
+2.  **Docker Build vs Trivy** :
+    *   *Problème* : L'option `load: true` de l'action `docker/build-push-action` faisait planter le chargement de l'image (erreur binaire étrange) à cause des nouvelles attestations de provenance de Docker.
+    *   *Solution* : J'ai dû abandonner l'action officielle pour repasser sur des commandes **shell manuelles** (`docker build` + `docker save`) pour générer un tarball propre pour le scan.
+
+3.  **SBOM & Tags** :
+    *   *Problème* : L'action de génération de SBOM échouait ("manifest unknown").
+    *   *Solution* : C'était une désynchronisation entre le tag poussé (chaîne courte) et le SHA complet attendu par Syft. J'ai forcé le push du tag `raw` (SHA complet) dans les métadonnées.
+
+4.  **Sécurité Alpine** :
+    *   *Problème* : L'image de base `nginx:alpine` trainait trop de failles.
+    *   *Solution* : Upgrade vers `nginx:1.27-alpine` + un `apk upgrade` explicite dans le Dockerfile.
 
 ---
 
@@ -42,6 +65,7 @@ Voici comment vérifier le travail réalisé :
 Allez dans l'onglet **Actions**. Vous verrez l'évolution :
 - ❌ **Builds Rouges** : Correspondant à l'étape d'injection volontaire de vulnérabilités. Le scanner Trivy a bloqué le pipeline.
 - ✅ **Dernier Build Vert** : Après correction des dépendances (`package.json`) et de l'image de base (`Dockerfile`).
+- 📦 **Artefacts** : Vous pouvez télécharger le fichier `sbom.spdx.json` généré à la fin du workflow.
 
 ### 2. Tester l'Image
 L'image est publique sur le GitHub Container Registry :
@@ -49,12 +73,6 @@ L'image est publique sur le GitHub Container Registry :
 docker run -d -p 8080:8080 ghcr.io/aent0n/devops-tp-docker-anton:latest
 ```
 *Accédez à http://localhost:8080 pour voir le dashboard et le "Health Check" visuel.*
-
-### 3. Fichiers Clés à Consulter
-*   `.github/workflows/docker-deploy.yml` : Le pipeline complet (Build + Scan + Push).
-*   `Dockerfile` : La structure sécurisée (Multi-stage + Non-root).
-*   `nginx/nginx.conf` : La configuration durcie.
-*   `highlights.md` : Détail technique approfondi.
 
 ## Structure du Projet
 
