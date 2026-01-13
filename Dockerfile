@@ -22,7 +22,7 @@ RUN npm run build:css
 # Stage 2: Production Image (Hardened)
 # ==================================
 # Utiliser une version spécifique (pas latest)
-FROM nginx:1.25.4-alpine
+FROM nginx:1.27-alpine
 
 # Métadonnées
 LABEL maintainer="TP DevOps"
@@ -33,8 +33,8 @@ LABEL org.opencontainers.image.source="https://github.com/anton/devops-tp-docker
 RUN addgroup -g 1000 -S appgroup && \
     adduser -u 1000 -S appuser -G appgroup
 
-# Installer uniquement les dépendances nécessaires
-RUN apk add --no-cache \
+# Installer uniquement les dépendances nécessaires et mettre à jour le système
+RUN apk update && apk upgrade && apk add --no-cache \
     ca-certificates \
     && rm -rf /var/cache/apk/*
 
