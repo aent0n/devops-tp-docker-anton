@@ -113,6 +113,9 @@ Une stack complète a été configurée avec Docker Compose !
 
 Vous pouvez générer du trafic sur le serveur et observer les graphes évoluer instantanément !
 
+**Résultat (Dashboard en direct)** :
+![Dashboard Grafana de l'Application Node.js instrumentée](grafana-dashboard.png)
+
 ## Structure du Projet
 
 ```
