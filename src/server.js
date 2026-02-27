@@ -4,8 +4,39 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
+const promClient = require('prom-client');
 
 const app = express();
+
+// ✅ Configuration Prometheus
+const register = promClient.register;
+
+// Métriques par défaut (CPU, mémoire, event loop)
+promClient.collectDefaultMetrics({ register });
+
+// Counter — requêtes HTTP totales
+const httpTotal = new promClient.Counter({
+    name: 'http_requests_total',
+    help: 'Total requêtes HTTP',
+    labelNames: ['method', 'route', 'status'],
+});
+
+// Histogram — durée des requêtes
+const httpDuration = new promClient.Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Durée des requêtes HTTP',
+    buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1],
+});
+
+// Middleware d'instrumentation Prometheus
+app.use((req, res, next) => {
+    const end = httpDuration.startTimer();
+    res.on('finish', () => {
+        httpTotal.inc({ method: req.method, route: req.path, status: res.statusCode });
+        end();
+    });
+    next();
+});
 
 // ✅ Secret depuis variable d'environnement
 const SECRET = process.env.JWT_SECRET;
@@ -68,6 +99,16 @@ app.get('/api/users', (req, res) => {
 // ✅ Endpoint de santé (sans infos sensibles)
 app.get('/health', (req, res) => {
     res.json({ status: 'OK' });
+});
+
+// ✅ Endpoint de métriques pour Prometheus
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+    } catch (ex) {
+        res.status(500).end(ex);
+    }
 });
 
 // ✅ Pas d'endpoint de debug en production

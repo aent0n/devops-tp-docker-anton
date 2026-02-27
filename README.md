@@ -91,6 +91,31 @@ docker run -d -p 8080:8080 ghcr.io/aent0n/devops-tp-docker-anton:latest
 ```
 *Accédez à http://localhost:8080 pour voir le dashboard et le "Health Check" visuel.*
 
+## 📈 Stack de Monitoring (Prometheus & Grafana)
+
+En complément du backend CI/CD, l'application expose maintenant ses métriques techniques en temps réel (via le package `prom-client` sur la route `/metrics`).
+Une stack complète a été configurée avec Docker Compose !
+
+### Architecture
+- **App** : Serveur API instrumenté contenant la faille de démonstration (Port 3000).
+- **Prometheus** : Scraping des métriques (`http_requests_total`, `http_request_duration_seconds`) et des métriques de la machine (via Node Exporter).
+- **Grafana** : Affichage de Dashboards complets.
+
+### Lancer le Monitoring
+1. À la racine du projet, lancez l'environnement :
+   ```bash
+   docker compose up -d --build
+   ```
+2. Accédez à vos services :
+   - **L'Application API** : `http://localhost:3000`
+   - **Prometheus** : `http://localhost:9090`
+   - **Grafana** : `http://localhost:3001` (Credentials: *admin / admin123*)
+
+Vous pouvez générer du trafic sur le serveur et observer les graphes évoluer instantanément !
+
+**Résultat (Dashboard en direct)** :
+![Dashboard Grafana de l'Application Node.js instrumentée](grafana-dashboard.png)
+
 ## Structure du Projet
 
 ```
@@ -98,9 +123,13 @@ devops-tp-docker-anton/
 ├── .github/
 │   ├── workflows/     # Pipelines (CodeQL + Docker Deploy)
 │   └── dependabot.yml # Bot de mises à jour
+├── prometheus/
+│   └── prometheus.yml # Config Scraping Monitoring
 ├── src/               # Code source (HTML/JS/Tailwind)
 ├── nginx/             # Config Nginx sécurisée
-├── Dockerfile         # Multi-stage Hardened
+├── Dockerfile         # Multi-stage Hardened pour le Front
+├── Dockerfile.api     # Image Alpine/Node.js pour l'API Rest
+├── docker-compose.yml # Orchestration du Monitoring Local
 ├── .hadolint.yaml     # Config Linter Docker
 └── README.md          # Ce rapport
 ```
