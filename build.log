@@ -1,0 +1,55 @@
+time="2026-02-27T16:19:50+01:00" level=warning msg="C:\\Users\\notna\\Documents\\Code\\EFREI\\devsecops m1\\devops-tp-docker-anton\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image devops-tp-docker-anton-app Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 631B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.api
+#2 transferring dockerfile: 618B 0.1s done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/node:22-alpine
+#3 DONE 0.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 95B done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34
+#5 resolve docker.io/library/node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34 0.0s done
+#5 DONE 0.1s
+
+#6 [internal] load build context
+#6 transferring context: 128B 0.1s done
+#6 DONE 0.1s
+
+#7 [3/6] COPY package*.json ./
+#7 CACHED
+
+#8 [4/6] RUN npm ci --only=production
+#8 CACHED
+
+#9 [5/6] COPY src/server.js ./src/server.js
+#9 CACHED
+
+#10 [2/6] WORKDIR /app
+#10 CACHED
+
+#11 [6/6] RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+#11 CACHED
+
+#12 exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:a469fa11215474c9572de43fd20436e9942aa7a4fa5e3ae7236dbc84501ba213 done
+#12 exporting config sha256:23b8642bf0452c67ae531c871b75989954df8ae363f17098304ff10f7bf7e815 done
+#12 exporting attestation manifest sha256:c424f8f3ff428e50e28e05c79746bd4ff7cba67cab99d4c018b7aab219e385a4
+#12 exporting attestation manifest sha256:c424f8f3ff428e50e28e05c79746bd4ff7cba67cab99d4c018b7aab219e385a4 0.1s done
+#12 exporting manifest list sha256:aeef37273fb426b033b8e7e4553cb31d4ec76a180fdd08a08363cc543a37d24d 0.0s done
+#12 naming to docker.io/library/devops-tp-docker-anton-app:latest done
+#12 unpacking to docker.io/library/devops-tp-docker-anton-app:latest
+#12 unpacking to docker.io/library/devops-tp-docker-anton-app:latest 0.0s done
+#12 DONE 0.2s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image devops-tp-docker-anton-app Built 
