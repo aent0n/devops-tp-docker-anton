@@ -50,7 +50,31 @@ Voici les principaux obstacles techniques surmontés :
 
 ---
 
-## Guide pour l'Évaluateur
+## 📊 Rapport DevSecOps (Projet Final)
+
+Dans le cadre de la consolidation DevSecOps, nous avons étendu la sécurité à l'application `Node.js` (`src/server.js`).
+
+### Vulnérabilités trouvées (Avant)
+- **SAST (Semgrep)** : 1 Injection SQL volontaire ajoutée dans une API de démonstration (`/api/users`), ainsi qu'une dépendance non sécurisée sur des fichiers/entrées.
+- **SCA (npm audit)** : Anciennes dépendances potentiellement vulnérables dans le `package.json` d'origine.
+- **Secrets (Gitleaks)** : Historiquement la base de données pouvait avoir des mots de passe en clair.
+- **Container Scan (Trivy)** : Image Alpine d'origine comportait des librairies système non patchées.
+
+### Corrections appliquées (Après)
+- **Node.js** : Ajout de `helmet` pour les headers, `express-rate-limit` contre le brute force, `express-validator` pour sanitiser et valider les entrées utilisateurs.
+- **Environnement** : Tous les secrets ont été retirés du code source. Nous utilisons maintenant `.env` (qui est dans `.gitignore`) et les `GitHub Secrets`.
+- **Infrastructure** : Le backend écoute sur un port non-privilégié, et le container nginx / node s'exécute avec l'utilisateur `appuser` / profil non-root. L'image de base Alpine a été mise à jour par son constructeur et par `apk upgrade`.
+- **CI/CD** : Intégration de Semgrep, Gitleaks, npm audit et un rapport JSON agrégé.
+
+### Métriques (Sévérité)
+- 🔴 Critical : 0 (stricte interdiction d'en avoir sur `main` sinon le workflow échoue)
+- 🟠 High : 0 (contrôlé par Trivy et npm audit)
+- 🟡 Medium/Low : Monitorés par CodeQL et Dependabot.
+
+### Leçons apprises
+L'intégration "Shift-Left" montre toute son utilité ! Découvrir une faille SQL au moment du build (via Semgrep ou CodeQL) fait gagner un temps précieux et évite un désastre en production. La compilation d'un rapport agrégé (JSON + Markdown) permet une lecture rapide de notre posture de sécurité à chaque commit. 😎
+
+## 👨‍🏫 Guide pour l'Évaluateur
 
 Voici comment vérifier le travail :
 

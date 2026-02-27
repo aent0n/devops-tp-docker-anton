@@ -13,6 +13,52 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  sast:
+    name: 🔍 SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+
+  sca:
+    name: 📦 SCA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: npm audit
+        run: |
+          npm audit --json > audit.json
+          npm audit || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit
+          path: audit.json
+
+  secrets:
+    name: 🔐 Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   security-analysis:
     name: Security Analysis
     runs-on: ubuntu-latest
@@ -131,3 +177,78 @@ jobs:
         with:
           name: sbom
           path: sbom.spdx.json
+
+  report:
+    name: 📊 Report
+    runs-on: ubuntu-latest
+    needs: [sast, sca, secrets, build-and-scan]
+    if: always()
+    steps:
+      - name: Generate JSON Report
+        run: |
+          cat > security-report.json <<EOF
+          {
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "repository": "${{ github.repository }}",
+            "commit": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "workflow_run": "${{ github.run_id }}",
+            "results": {
+              "sast": {
+                "status": "${{ needs.sast.result }}",
+                "tool": "Semgrep"
+              },
+              "sca": {
+                "status": "${{ needs.sca.result }}",
+                "tool": "npm audit"
+              },
+              "secrets": {
+                "status": "${{ needs.secrets.result }}",
+                "tool": "Gitleaks"
+              },
+              "container_scan": {
+                "status": "${{ needs.build-and-scan.result }}",
+                "tool": "Trivy"
+              }
+            },
+            "summary": {
+              "total_checks": 4,
+              "passed": $(echo '${{ needs.sast.result }} ${{ needs.sca.result }} ${{ needs.secrets.result }} ${{ needs.build-and-scan.result }}' | grep -o "success" | wc -l),
+              "failed": $(echo '${{ needs.sast.result }} ${{ needs.sca.result }} ${{ needs.secrets.result }} ${{ needs.build-and-scan.result }}' | grep -o "failure" | wc -l),
+              "overall_status": "$([[ "${{ needs.sast.result }}" == "failure" ]] || [[ "${{ needs.sca.result }}" == "failure" ]] || [[ "${{ needs.secrets.result }}" == "failure" ]] || [[ "${{ needs.build-and-scan.result }}" == "failure" ]] && echo "FAILED" || echo "PASSED")"
+            }
+          }
+          EOF
+          echo "📄 Security Report Generated:"
+          cat security-report.json | jq '.'
+
+      - name: Upload JSON Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.json
+
+      - name: Summary
+        run: |
+          echo "## 🔒 Security Scan Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Job Results:" >> $GITHUB_STEP_SUMMARY
+          echo "- SAST: ${{ needs.sast.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- SCA: ${{ needs.sca.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Secrets: ${{ needs.secrets.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Container Scan: ${{ needs.build-and-scan.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 **JSON Report available in artifacts**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ needs.sast.result }}" == "failure" ]] || \
+             [[ "${{ needs.sca.result }}" == "failure" ]] || \
+             [[ "${{ needs.secrets.result }}" == "failure" ]] || \
+             [[ "${{ needs.build-and-scan.result }}" == "failure" ]]; then
+            echo "❌ **Security issues detected!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Please review the failed jobs above" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ All security checks passed" >> $GITHUB_STEP_SUMMARY
+          fi
+
